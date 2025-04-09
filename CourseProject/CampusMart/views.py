@@ -44,7 +44,7 @@ def login_view(request):
 def logout_view(request):
     # Logout the user using Django's built-in logout function
     logout(request)
-    messages.success(request, 'Logout was successful!')
+    messages.success(request, 'Log out was successful!')
     return HttpResponseRedirect(reverse("CampusMart:login"))
 
 def register(request):
