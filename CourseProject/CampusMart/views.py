@@ -10,7 +10,15 @@ from django.contrib.auth.models import User
 # Create your views here.
 
 def index(request):
-    context = {'app': 'Campus Mart'}
+    first_name = ""
+    
+    if request.user.is_authenticated:
+        first_name = request.user.first_name
+
+    context = {
+        'app': 'Campus Mart',
+        'first_name': first_name,
+    }
     return render(request, 'CampusMart/index.html', context)
 
 def login_view(request):
@@ -28,6 +36,7 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse('CampusMart:index'))
         else:
+            messages.error(request, 'Login failed. Please check your username and password.')
             errors = [('authentication', "Login error")]
 
     return render(request, 'CampusMart/login.html', {'errors': errors})
@@ -41,6 +50,7 @@ def logout_view(request):
 def register(request):
     if request.method == 'POST':
         # Create a model instance and populate it with data from the request
+        first_name = request.POST["first_name"]
         uname = request.POST["username"]
         pwd = request.POST["password"]
         email = request.POST["email"]
@@ -48,6 +58,7 @@ def register(request):
         try:
             # Create a new user using Django's create_user method (which hashes the password)
             user = User.objects.create_user(username=uname, password=pwd, email=email)
+            user.first_name = first_name
 
             # If we reach here, the validation succeeded
             user.save()  # Save the new user to the database

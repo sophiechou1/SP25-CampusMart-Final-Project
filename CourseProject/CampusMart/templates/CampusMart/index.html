@@ -6,13 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ app }}</title>
 </head>
+
 <body>
-    <h1>Welcome to Campus Mart!</h1>
+    {% if first_name %}
+        <h2>Welcome to {{ app }}, {{ first_name }}!</h2>
+    {% else %}
+        <h2>Welcome to {{ app }}!</h2>
+    {% endif %}
 
     <!-- Logout Button -->
-    <form action="{% url 'CampusMart:logout' %}" method="POST">
+    <form action="{% url 'CampusMart:logout' %}" method="POST" style="display:inline;">
         {% csrf_token %}
-        <button type="submit">Logout</button>
+        <button type="submit" class="logout-btn">Logout</button>
     </form>
 
 </body>
