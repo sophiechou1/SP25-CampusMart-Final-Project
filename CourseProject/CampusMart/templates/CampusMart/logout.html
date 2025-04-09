@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html>
-    </head>
-    <body>
-        <div class="logout-container">
-            <h2>You’ve been logged out.</h2>
-            <a href="{% url 'CampusMart:login' %}">Return to Log In</a>
-        </div>
-    </body>
-</html>
+{% if messages %}
+    <div class="alert">
+        {% for message in messages %}
+            <div class="alert-message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
