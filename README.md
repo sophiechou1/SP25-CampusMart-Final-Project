@@ -10,13 +10,8 @@ Sophie Chou, Elissa McDermott, Hannah Huston
 
 ### Prerequisites
 Make sure you have the following installed:
-* [Python 3.10+]((https://www.python.org/downloads/)
+* [Python 3.10+](https://www.python.org/downloads/)
 * [pip](https://pip.pypa.io/en/stable/installation/)
-* [npm (for Bootstrap or optional frontend)](https://www.npmjs.com/get-npm)
-* Install `npm` (if needed):
-```sh
-npm install npm@latest -g
-```
 
 ### Installation
 1. Clone the repo
