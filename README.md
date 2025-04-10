@@ -42,7 +42,7 @@ Make sure you have the following installed:
 Group-14/  
 ├── CourseProject/  
     ├── CampusMart/  
-      ├── templates/  
+       ├── templates/  
     ├── manage.py/  
     ├── db.sqlite3  
 ├── README.md  
