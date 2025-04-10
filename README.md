@@ -14,7 +14,7 @@ Make sure you have the following installed:
 * [pip](https://pip.pypa.io/en/stable/installation/)
 
 ### Installation
-1. Clone the repo
+1. Clone and cd into the repo
    ```sh
    git clone https://github.com/sophiechou1/Group-14.git
    cd Group-14
