@@ -39,4 +39,12 @@ Make sure you have the following installed:
     ```
 
 ### Folder Structure
-<pre> Group-14/ ├── CourseProject/ │ ├── CampusMart/ │ │ ├── templates/ │ ├── manage.py │ ├── db.sqlite3 ├── README.md ├── CONTRIBUTIONS.md └── requirements.txt </pre>
+Group-14/  
+├── CourseProject/  
+    ├── CampusMart/  
+      ├── templates/  
+    ├── manage.py/  
+    ├── db.sqlite3  
+├── README.md  
+├── CONTRIBUTIONS.md  
+└── requirements.txt  
