@@ -8,12 +8,12 @@ Sophie Chou, Elissa McDermott, Hannah Huston
 * [Django](https://www.djangoproject.com/)
 * [Bootstrap](https://getbootstrap.com)
 
-### Prerequisites
+## Prerequisites
 Make sure you have the following installed:
 * [Python 3.10+](https://www.python.org/downloads/)
 * [pip](https://pip.pypa.io/en/stable/installation/)
 
-### Installation
+## Installation
 1. Clone and cd into the repo
    ```sh
    git clone https://github.com/sophiechou1/Group-14.git
@@ -38,7 +38,7 @@ Make sure you have the following installed:
     python manage.py runserver
     ```
 
-### Folder Structure
+## Folder Structure
 All necessary source files to run/start the server are located in the "CourseProject" Directory!  
 Group-14/  
 ├── CourseProject/  
