@@ -39,6 +39,7 @@ Make sure you have the following installed:
     ```
 
 ### Folder Structure
+All necessary source files to run/start the server are located in the "CourseProject" Directory!
 Group-14/  
 ├── CourseProject/  
 &nbsp;&nbsp;&nbsp;&nbsp;├── CourseProject/  
