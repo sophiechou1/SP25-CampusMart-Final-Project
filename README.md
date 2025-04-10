@@ -41,10 +41,10 @@ Make sure you have the following installed:
 ### Folder Structure
 Group-14/  
 ├── CourseProject/  
-    ├── CampusMart/  
-       ├── templates/  
-    ├── manage.py/  
-    ├── db.sqlite3  
+&nbsp;&nbsp;&nbsp;&nbsp;├── CampusMart/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── templates/  
+&nbsp;&nbsp;&nbsp;&nbsp;├── manage.py/  
+&nbsp;&nbsp;&nbsp;&nbsp;├── db.sqlite3  
 ├── README.md  
 ├── CONTRIBUTIONS.md  
 └── requirements.txt  
