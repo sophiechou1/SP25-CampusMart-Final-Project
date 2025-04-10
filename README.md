@@ -42,7 +42,8 @@ Make sure you have the following installed:
 Group-14/  
 ├── CourseProject/  
 &nbsp;&nbsp;&nbsp;&nbsp;├── CampusMart/  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── templates/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── templates/
+&nbsp;&nbsp;&nbsp;&nbsp;├── CourseProject/  
 &nbsp;&nbsp;&nbsp;&nbsp;├── manage.py/  
 &nbsp;&nbsp;&nbsp;&nbsp;├── db.sqlite3  
 ├── README.md  
