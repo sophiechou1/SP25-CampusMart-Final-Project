@@ -1,3 +1,5 @@
+<!-- Home Screen -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +15,7 @@
     <br>
     
     <h1>
+        <!-- Welcome Text -->
         {% if first_name %}
             <h2>Welcome to {{ app }}, {{ first_name }}!</h2>
         {% else %}
@@ -27,7 +30,7 @@
         <!-- Logout Button -->
         <form action="{% url 'CampusMart:logout' %}" method="POST" style="display:inline;">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Logout</button>
+            <button type="submit" class="btn btn-primary">Log Out</button>
         </form>
     </body>
 </div>

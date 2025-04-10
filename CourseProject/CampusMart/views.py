@@ -7,8 +7,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 
-# Create your views here.
-
+# index view
 def index(request):
     first_name = ""
     
@@ -19,54 +18,57 @@ def index(request):
         'app': 'Campus Mart',
         'first_name': first_name,
     }
-    return render(request, 'CampusMart/index.html', context)
 
+    return render(request, 'CampusMart/index.html', context)
+# login view
 def login_view(request):
     errors = None
     if request.method == 'POST':
-        # Get user credentials from POST request
+        # get user credentials from POST request
         uname = request.POST["username"]
         pwd = request.POST["password"]
 
-        # Authenticate user using Django's built-in authenticate method
+        # authenticate user using authenticate method
         user = authenticate(request, username=uname, password=pwd)
 
         if user is not None:
-            # User is authenticated, log them in
+            # user is authenticated, log them in
             login(request, user)
             return HttpResponseRedirect(reverse('CampusMart:index'))
         else:
+            # user is not authenticated, display error
             messages.error(request, 'Login failed. Please check your username and password.')
             errors = [('authentication', "Login error")]
 
     return render(request, 'CampusMart/login.html', {'errors': errors})
 
+# log out view
 def logout_view(request):
-    # Logout the user using Django's built-in logout function
+    # logout user using logout function
     logout(request)
     messages.success(request, 'Log out was successful!')
     return HttpResponseRedirect(reverse("CampusMart:login"))
 
 def register(request):
     if request.method == 'POST':
-        # Create a model instance and populate it with data from the request
+        # get user credentials from POST request
         first_name = request.POST["first_name"]
         uname = request.POST["username"]
         pwd = request.POST["password"]
         email = request.POST["email"]
 
         try:
-            # Create a new user using Django's create_user method (which hashes the password)
+            # create a new user
             user = User.objects.create_user(username=uname, password=pwd, email=email)
             user.first_name = first_name
 
-            # If we reach here, the validation succeeded
-            user.save()  # Save the new user to the database
-            # Redirect to the login page
+            # validation succeeded, save the new user to the database
+            user.save()
+            # redirect to the login page
             return HttpResponseRedirect(reverse('CampusMart:login'))
 
         except ValidationError as e:
-            # Handle validation errors
+            # handle validation errors
             return HttpResponseRedirect(reverse('CampusMart:index'))
     else:
         return render(request, "CampusMart/register.html")
