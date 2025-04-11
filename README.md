@@ -37,7 +37,7 @@ Make sure you have the following installed:
     ```sh
     python manage.py runserver
     ```
-7. Test project
+7. Test project  
    Add /CampusMart to the end of the link to view the home screen
    Add /CampusMart/register to view register screen  
    Add /CampusMart/login to view login screen  
