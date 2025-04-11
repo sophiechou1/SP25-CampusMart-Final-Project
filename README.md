@@ -30,7 +30,7 @@ Make sure you have the following installed:
    ```
 4. Run migrations
    ```sh
-   cd CourseProject
+   cd src
    python manage.py migrate
    ```
 6.  Start server
