@@ -37,11 +37,16 @@ Make sure you have the following installed:
     ```sh
     python manage.py runserver
     ```
-
+7. Test project
+   Add /CampusMart to the end of the link to view the home screen
+   Add /CampusMart/register to view register screen  
+   Add /CampusMart/login to view login screen  
+   Add /admin to view admin interface + database (user: group14 pass: group14)  
+   
 ## Folder Structure
-All necessary source files to run/start the server are located in the "CourseProject" Directory!  
+All necessary source files to run/start the server are located in the "src" Directory!  
 Group-14/  
-├── CourseProject/  
+├── src/  
 &nbsp;&nbsp;&nbsp;&nbsp;├── CourseProject/  
 &nbsp;&nbsp;&nbsp;&nbsp;├── CampusMart/  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── templates/  
