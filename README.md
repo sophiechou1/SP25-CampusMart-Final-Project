@@ -1,44 +1,52 @@
 # About The Project
 
-Here's a blank template for your group to use.
+## Group 14 Members
+Sophie Chou, Elissa McDermott, Hannah Huston
 
 ## Built With
-List here all the dependencies of your project (including version). For example:
-
 * [Python](https://www.python.org/)
 * [Django](https://www.djangoproject.com/)
-* [TkInter](https://docs.python.org/3/library/tkinter.html)
 * [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
 
+## Prerequisites
+Make sure you have the following installed:
+* [Python 3.10+](https://www.python.org/downloads/)
+* [pip](https://pip.pypa.io/en/stable/installation/)
 
-
-## Getting Started
-
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
-
-Describe here the list of steps to get your project running. For example:
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+## Installation
+1. Clone and cd into the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/sophiechou1/Group-14.git
+   cd Group-14
+   ```
+2. (Optional) Create virtual environment
+   ```sh
+   python -m venv venv
+   source venv/bin/activate
    ```
 3. Install libraries
    ```sh
    pip install -r requirements.txt
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+4. Run migrations
+   ```sh
+   cd CourseProject
+   python manage.py migrate
    ```
+6.  Start server
+    ```sh
+    python manage.py runserver
+    ```
+
+## Folder Structure
+All necessary source files to run/start the server are located in the "CourseProject" Directory!  
+Group-14/  
+├── CourseProject/  
+&nbsp;&nbsp;&nbsp;&nbsp;├── CourseProject/  
+&nbsp;&nbsp;&nbsp;&nbsp;├── CampusMart/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── templates/  
+&nbsp;&nbsp;&nbsp;&nbsp;├── manage.py  
+&nbsp;&nbsp;&nbsp;&nbsp;├── db.sqlite3  
+├── README.md  
+├── CONTRIBUTIONS.md  
+└── requirements.txt  
