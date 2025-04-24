@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'CampusMart/style.css' %}">
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+          <!-- Brand with logo -->
+          <a class="navbar-brand d-flex align-items-center" href="{% url 'CampusMart:index' %}">
+            <img src="{% static 'campusmart_logo.png' %}" alt="Logo" style="height: 80px; width: auto;" class="me-2">
+          </a>
+      
+          <!-- Mobile toggle -->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+      
+          <!-- Nav content -->
+          <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+            <ul class="navbar-nav align-items-center">
+    
+    
+              <!-- Dropdown for username / logout -->
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown">
+                  {{ request.user.username }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <form action="{% url 'CampusMart:logout' %}" method="POST" class="px-3">
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item logout-hover">Log Out</button>
+                    </form>
+                  </li>
+                </ul>
+              </li>
+      
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Create New Listing</h1>
+
+    {% if remaining > 0 %}
+        <p class="text-success text-center">You have {{ remaining }} free listings left today</p>
+    {% else %}
+        <p class="text-danger text-center">You’ve used all 3 free listings today</p>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="w-75 mx-auto">
+        {% csrf_token %}
+
+        <div class="mb-3 text-start">
+            <h3 class="h5">Title</h3>
+            <input type="text" name="title" class="form-control" placeholder="Title" required>
+        </div>
+
+        <div class="mb-3 text-start">
+            <h3 class="h5">Description</h3>
+            <textarea name="description" class="form-control" placeholder="Description" required></textarea>
+        </div>
+
+        <div class="mb-3 text-start">
+            <h3 class="h5">Price</h3>
+            <input type="number" name="price" class="form-control" placeholder="Price" step="1.00" required>
+        </div>
+
+        <div class="mb-3 text-start">
+            <h3 class="h5">Condition</h3>
+            <select name="condition" class="form-select" required>
+                <option value="">Select...</option>
+                <option value="NEW">New</option>
+                <option value="LIKE_NEW">Like New</option>
+                <option value="USED">Used</option>
+                <option value="FAIR">Fair</option>
+            </select>
+        </div>
+
+        <div class="mb-3 text-start">
+            <h3 class="h5">Photos</h3>
+            <input type="file" name="images" class="form-control" multiple>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Post Listing</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,36 @@
+/* style.css */
+
+h1 { 
+    font-size: 24px;
+    font-family: 'Roboto', sans-serif;
+    color: black;
+    text-align: center;
+    font-weight: bold;
+ }
+
+body {
+    font-size: 20px;
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+.row .col-12 {
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+p {
+    font-size: 18px;
+    margin: 20px 40px;
+}
+
+.navbar .nav-link.dropdown-toggle {
+    font-size: 18px;
+}
+
+.logout-hover:hover {
+    font-weight: bold;
+    background-color: transparent;
+}
