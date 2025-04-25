@@ -55,48 +55,51 @@
 
     {% if remaining > 0 %}
         <p class="text-success text-center">You have {{ remaining }} free listings left today</p>
+        <form method="post" enctype="multipart/form-data" class="w-75 mx-auto">
+          {% csrf_token %}
+  
+          <div class="mb-3 text-start">
+              <h3 class="h5">Title</h3>
+              <input type="text" name="title" class="form-control" placeholder="Title" required>
+          </div>
+  
+          <div class="mb-3 text-start">
+              <h3 class="h5">Description</h3>
+              <textarea name="description" class="form-control" placeholder="Description" required></textarea>
+          </div>
+  
+          <div class="mb-3 text-start">
+              <h3 class="h5">Price</h3>
+              <input type="number" name="price" class="form-control" placeholder="Price" step="1.00" required>
+          </div>
+  
+          <div class="mb-3 text-start">
+              <h3 class="h5">Condition</h3>
+              <select name="condition" class="form-select" required>
+                  <option value="">Select...</option>
+                  <option value="NEW">New</option>
+                  <option value="LIKE_NEW">Like New</option>
+                  <option value="USED">Used</option>
+                  <option value="FAIR">Fair</option>
+              </select>
+          </div>
+  
+          <div class="mb-3 text-start">
+              <h3 class="h5">Photos</h3>
+              <input type="file" name="images" class="form-control" multiple>
+          </div>
+  
+          <div class="text-center">
+              <button type="submit" class="btn btn-primary">Post Listing</button>
+          </div>
+      </form>
     {% else %}
         <p class="text-danger text-center">You’ve used all 3 free listings today</p>
+        <div class="container mt-3 text-center">
+          <a href="{% url 'CampusMart:index' %}" class="btn btn-primary">Return to Home</a>
+        </div>
     {% endif %}
 
-    <form method="post" enctype="multipart/form-data" class="w-75 mx-auto">
-        {% csrf_token %}
-
-        <div class="mb-3 text-start">
-            <h3 class="h5">Title</h3>
-            <input type="text" name="title" class="form-control" placeholder="Title" required>
-        </div>
-
-        <div class="mb-3 text-start">
-            <h3 class="h5">Description</h3>
-            <textarea name="description" class="form-control" placeholder="Description" required></textarea>
-        </div>
-
-        <div class="mb-3 text-start">
-            <h3 class="h5">Price</h3>
-            <input type="number" name="price" class="form-control" placeholder="Price" step="1.00" required>
-        </div>
-
-        <div class="mb-3 text-start">
-            <h3 class="h5">Condition</h3>
-            <select name="condition" class="form-select" required>
-                <option value="">Select...</option>
-                <option value="NEW">New</option>
-                <option value="LIKE_NEW">Like New</option>
-                <option value="USED">Used</option>
-                <option value="FAIR">Fair</option>
-            </select>
-        </div>
-
-        <div class="mb-3 text-start">
-            <h3 class="h5">Photos</h3>
-            <input type="file" name="images" class="form-control" multiple>
-        </div>
-
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary">Post Listing</button>
-        </div>
-    </form>
 </div>
 </body>
 </html>

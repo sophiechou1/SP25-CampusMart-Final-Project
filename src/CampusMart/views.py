@@ -10,56 +10,6 @@ from .models import Product, ProductImage, User
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 
-#create listing
-def create_listing(request):
-    today = now().date()
-    try:
-        seller_user = User.objects.get(auth_user=request.user)
-    except User.DoesNotExist:
-        return render(request, 'CampusMart/create_listing.html', {
-            'remaining': 0,
-            'error': 'Your user profile was not found.'
-        })
-    post_count = Product.objects.filter(seller=seller_user, post_date__date=today).count()
-
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        price = request.POST.get('price')
-        condition = request.POST.get('condition')
-        images = request.FILES.getlist('images')
-
-        if not title or not description or not price or not condition or not images:
-            messages.error(request, "All fields are required, including at least one image.")
-            return render(request, 'CampusMart/create_listing.html')
-
-        if post_count >= 3:
-            messages.warning(request, "You've reached your daily listing limit.")
-            return HttpResponseRedirect(reverse('CampusMart:index'))
-        
-        product = Product.objects.create(
-            seller=seller_user,
-            title=title,
-            description=description,
-            price=price,
-            condition=condition,
-            post_date = today,
-            status='AVAILABLE'
-        )
-
-        for img in request.FILES.getlist('images'):
-            ProductImage.objects.create(product=product, image=img)
-
-        messages.success(request, "Listing created successfully!")
-        return HttpResponseRedirect(reverse('CampusMart:index'))
-    
-    context = {
-        'remaining': 3 - post_count,
-    }
-    
-
-    return render(request, 'CampusMart/create_listing.html', context)
-
 # index view
 def index(request):
     first_name = ""
@@ -133,3 +83,134 @@ def register(request):
             return HttpResponseRedirect(reverse('CampusMart:index'))
     else:
         return render(request, "CampusMart/register.html")
+
+# create listing
+def create_listing(request):
+    today = now().date()
+    try:
+        seller_user = User.objects.get(auth_user=request.user)
+    except User.DoesNotExist:
+        return render(request, 'CampusMart/create_listing.html', {
+            'remaining': 0,
+            'error': 'Your user profile was not found.'
+        })
+    post_count = Product.objects.filter(seller=seller_user, post_date__date=today).count()
+
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        price = request.POST.get('price')
+        condition = request.POST.get('condition')
+        images = request.FILES.getlist('images')
+
+        if not title or not description or not price or not condition or not images:
+            messages.error(request, "All fields are required, including at least one image.")
+            return render(request, 'CampusMart/create_listing.html')
+
+        if post_count >= 3:
+            messages.warning(request, "You've reached your daily listing limit.")
+            return HttpResponseRedirect(reverse('CampusMart:index'))
+        
+        product = Product.objects.create(
+            seller=seller_user,
+            title=title,
+            description=description,
+            price=price,
+            condition=condition,
+            post_date = today,
+            status='AVAILABLE'
+        )
+
+        for img in request.FILES.getlist('images'):
+            ProductImage.objects.create(product=product, image=img)
+
+        return HttpResponseRedirect(reverse('CampusMart:index'))
+    
+    context = {
+        'remaining': 3 - post_count,
+    }
+    
+
+    return render(request, 'CampusMart/create_listing.html', context)
+
+# update listing
+@login_required
+def update_listing(request, product_id):
+    today = now().date()
+    try:
+        seller_user = User.objects.get(auth_user=request.user)
+    except User.DoesNotExist:
+        return render(request, 'CampusMart/create_listing.html', {
+            'remaining': 0,
+            'error': 'Your user profile was not found.'
+        })
+    product = get_object_or_404(Product, id=product_id, seller__auth_user=request.user)
+    post_count = Product.objects.filter(seller=seller_user, post_date__date=today).count()
+
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        price = request.POST.get('price')
+        condition = request.POST.get('condition')
+        status = request.POST.get('status')
+        new_images = request.FILES.getlist('images')
+
+        if not title or not description or not price or not condition or not status:
+            return HttpResponseRedirect(reverse('CampusMart:index'))
+
+        # Update fields
+        product.title = title
+        product.description = description
+        product.price = price
+        product.condition = condition
+        product.status = status
+        product.save()
+
+        if new_images:
+            ProductImage.objects.filter(product=product).delete()
+            for img in new_images:
+                ProductImage.objects.create(product=product, image=img)
+        return HttpResponseRedirect(reverse('CampusMart:index'))
+
+    context = {
+        'product': product,
+        'remaining': 3 - Product.objects.filter(seller=product.seller, post_date__date=now().date()).count(),
+    }
+
+    return render(request, 'CampusMart/update_listing.html', context)
+
+
+@login_required
+def my_listings(request):
+    try:
+        user_profile = User.objects.get(auth_user=request.user)
+    except User.DoesNotExist:
+        return render(request, 'CampusMart/my_listings.html', {'error': 'Profile not found', 'listings': []})
+
+    listings = Product.objects.filter(seller=user_profile)
+
+    return render(request, 'CampusMart/my_listings.html', {
+        'listings': listings
+    })
+
+@login_required
+def delete_listing(request, product_id):
+    try:
+        # Get the custom user linked to the logged-in Django user
+        custom_user = User.objects.get(auth_user=request.user)
+    except User.DoesNotExist:
+        return HttpResponseRedirect(reverse('CampusMart:my_listings'))
+
+    # Get the product only if it belongs to the current user
+    try:
+        product = Product.objects.get(id=product_id, seller=custom_user)
+    except Product.DoesNotExist:
+        return HttpResponseRedirect(reverse('CampusMart:my_listings'))
+
+    # Delete only on POST
+    if request.method == 'POST':
+        product.delete()
+        return HttpResponseRedirect(reverse('CampusMart:my_listings'))
+
+    # Fallback (not expected)
+    return HttpResponseRedirect(reverse('CampusMart:my_listings'))

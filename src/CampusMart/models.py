@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User as AuthUser
+import os
+from django.utils.timezone import now
+
 
 # user model
 class User(models.Model):
@@ -30,6 +33,11 @@ class Product(models.Model):
     def __str__(self):
         return self.title
     
+def upload_to(instance, filename):
+    product_id = instance.product_id or 'unsaved'
+    return f'product_images/product_{product_id}/{filename}'
+    
+    
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='product_images/')
+    image = models.ImageField(upload_to=upload_to)
