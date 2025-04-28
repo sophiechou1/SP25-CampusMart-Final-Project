@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.core.paginator import Paginator
 from django.shortcuts import render 
+from django.db.models import Q
 
 # index view
 def index(request):
@@ -219,15 +220,23 @@ def delete_listing(request, product_id):
 
 
 #view all listings 
-#possibly add something in index.html
 def view_all(request):
     #get all listings available
-    listings = Product.objects.all()  
+    listings = Product.objects.filter(status='AVAILABLE').order_by('-post_date')
     #use paginator to get 20 per page
     p = Paginator(listings, 20)    
     #to help users navigate 
     page_number = request.GET.get("page")
-    page_obj = p.get_page(page_number)        
+    page_obj = p.get_page(page_number)  
+
+    # search functionality
+    query = request.GET.get('q')
+    if query:
+        listings = listings.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+
+
 
     return render(request, 'CampusMart/view_all.html', {'listings': listings, 'page_obj': page_obj})
 
