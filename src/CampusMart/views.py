@@ -219,6 +219,7 @@ def delete_listing(request, product_id):
 
 
 #view all listings 
+#possibly add something in index.html
 def view_all(request):
     #get all listings available
     listings = Product.objects.all()  
@@ -229,3 +230,17 @@ def view_all(request):
     page_obj = p.get_page(page_number)        
 
     return render(request, 'CampusMart/view_all.html', {'listings': listings, 'page_obj': page_obj})
+
+
+#search for a specific listing
+#add a search bar in index
+def search(request):
+
+
+    return render(request, 'CampusMart/search.html')
+
+#message function between seller & buyer
+#should set up something in the index.html to add the message inbox to the homescreen
+def messaging(request):
+
+    return render(request, 'CampusMart/messaging.html')
