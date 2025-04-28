@@ -9,6 +9,8 @@ from django.contrib.auth.models import User as AuthUser
 from .models import Product, ProductImage, User
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
+from django.core.paginator import Paginator
+from django.shortcuts import render 
 
 # index view
 def index(request):
@@ -216,15 +218,14 @@ def delete_listing(request, product_id):
     return HttpResponseRedirect(reverse('CampusMart:my_listings'))
 
 
-
+#view all listings 
 def view_all(request):
-    #need product title
+    #get all listings available
+    listings = Product.objects.all()  
+    #use paginator to get 20 per page
+    p = Paginator(listings, 20)    
+    #to help users navigate 
+    page_number = request.GET.get("page")
+    page_obj = p.get_page(page_number)        
 
-    #product price
-
-    #product
-
-    #20 products at a time
-
-
-    return
+    return render(request, 'CampusMart/view_all.html', {'listings': listings, 'page_obj': page_obj})
