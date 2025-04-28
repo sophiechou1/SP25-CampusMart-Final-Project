@@ -21,6 +21,9 @@ class CampusMartConfig(AppConfig):
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# define API user and password
+API_USERNAME = 'emcderm3'
+API_PASSWORD = 'group14HSE'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -112,7 +115,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
+USE_TZ = True
 
 USE_I18N = True
 

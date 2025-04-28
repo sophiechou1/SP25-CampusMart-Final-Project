@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password
@@ -6,12 +6,16 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.models import User as AuthUser
-from .models import Product, ProductImage, User
+from .models import Product, ProductImage, User, Message
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.core.paginator import Paginator
-from django.shortcuts import render 
 from django.db.models import Q
+from django.contrib import messages
+from .forms import PurchaseListingsForm
+from .models import UserExtraListings
+from .services import get_access_token, view_user_balance, user_pay
+from django.conf import settings
 
 # index view
 def index(request):
@@ -83,7 +87,11 @@ def register(request):
 
         except ValidationError as e:
             # handle validation errors
-            return HttpResponseRedirect(reverse('CampusMart:index'))
+            messages.error(request, "Registration failed. Please correct the errors and try again.")
+            return render(request, "CampusMart/register.html")
+        except Exception as e:
+            messages.error(request, f"Error: Name already exists in database. Try again.")
+            return render(request, "CampusMart/register.html")
     else:
         return render(request, "CampusMart/register.html")
 
@@ -182,7 +190,7 @@ def update_listing(request, product_id):
 
     return render(request, 'CampusMart/update_listing.html', context)
 
-
+# my listings
 @login_required
 def my_listings(request):
     try:
@@ -196,6 +204,7 @@ def my_listings(request):
         'listings': listings
     })
 
+# delete listing
 @login_required
 def delete_listing(request, product_id):
     try:
@@ -220,6 +229,7 @@ def delete_listing(request, product_id):
 
 
 #view all listings 
+@login_required
 def view_all(request):
     #get all listings available
     listings = Product.objects.filter(status='AVAILABLE').order_by('-post_date')
@@ -236,20 +246,86 @@ def view_all(request):
             Q(title__icontains=query) | Q(description__icontains=query)
         )
 
-
-
     return render(request, 'CampusMart/view_all.html', {'listings': listings, 'page_obj': page_obj})
 
 
-#search for a specific listing
-#add a search bar in index
-def search(request):
+# message function between seller & buyer
+@login_required
+def messaging(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        sender_user = User.objects.get(auth_user=request.user)
+        receiver_user = product.seller
 
+        body = request.POST.get('body')
 
-    return render(request, 'CampusMart/search.html')
+        if body:
+            Message.objects.create(
+                sender=sender_user,
+                receiver=receiver_user,
+                product=product,
+                body=body
+            )
+            return HttpResponseRedirect(reverse('CampusMart:view_all'))
+        
+        else:
+            return HttpResponseRedirect(reverse('CampusMart:view_all'))
 
-#message function between seller & buyer
-#should set up something in the index.html to add the message inbox to the homescreen
-def messaging(request):
+    return HttpResponseRedirect(reverse('CampusMart:view_all'))
 
-    return render(request, 'CampusMart/messaging.html')
+#inbox view to view the messages
+@login_required
+def inbox(request):
+    try:
+        user = User.objects.get(auth_user=request.user)
+    except User.DoesNotExist:
+        messages.error(request, "User profile not found.")
+        return redirect('CampusMart:index')  # or wherever makes sense
+
+    received_messages = Message.objects.filter(receiver=user).order_by('-timestamp')
+    sent_messages = Message.objects.filter(sender=user).order_by('-timestamp')
+    
+    context = {
+        'received_messages': received_messages,
+        'sent_messages': sent_messages,
+    }
+    return render(request, 'CampusMart/messaging.html', context)
+
+# purchasing interface view 
+def purchase_listings(request):
+    if request.method == 'POST':
+        form = PurchaseListingsForm(request.POST)
+        if form.is_valid():
+            number_of_listings = form.cleaned_data['number_of_listings']
+            user_email = request.user.email
+
+            try:
+                # 1. Get Access Token
+                access_token = get_access_token(settings.API_USERNAME, settings.API_PASSWORD)
+
+                # 2. View Current Balance
+                balance = view_user_balance(access_token, user_email)
+
+                # 3. Check if user has enough balance
+                if balance < number_of_listings:
+                    messages.error(request, "Insufficient funds. Please add more Krato$Coin.")
+                    return redirect('purchase_listings')
+
+                # 4. Charge the user
+                user_pay(access_token, user_email, number_of_listings)
+
+                # 5. Update user's extra listings locally
+                extra_listing_record, created = UserExtraListings.objects.get_or_create(user=request.user)
+                extra_listing_record.extra_listings += number_of_listings
+                extra_listing_record.save()
+
+                messages.success(request, f"You successfully purchased {number_of_listings} extra listings!")
+
+            except Exception as e:
+                messages.error(request, f"An error occurred: {str(e)}")
+
+            return redirect('purchase_listings')
+    else:
+        form = PurchaseListingsForm()
+
+    return render(request, 'purchase_listings.html', {'form': form})

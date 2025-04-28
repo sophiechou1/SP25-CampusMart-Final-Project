@@ -1,3 +1,4 @@
+<!-- Update Listing Screen -->
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -13,64 +14,75 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-          <!-- Brand with logo -->
-          <a class="navbar-brand d-flex align-items-center" href="{% url 'CampusMart:index' %}">
-            <img src="{% static 'campusmart_logo.png' %}" alt="Logo" style="height: 80px; width: auto;" class="me-2">
-          </a>
-      
-          <!-- Mobile toggle -->
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-      
-          <!-- Nav content -->
-          <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
-            <ul class="navbar-nav align-items-center">
-    
-    
-              <!-- Dropdown for username / logout -->
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown">
-                  {{ request.user.username }}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <form action="{% url 'CampusMart:logout' %}" method="POST" class="px-3">
-                      {% csrf_token %}
-                      <button type="submit" class="dropdown-item logout-hover">Log Out</button>
-                    </form>
-                  </li>
-                </ul>
-              </li>
-      
-            </ul>
-          </div>
-        </div>
-      </nav>
+ <!-- Full Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <!-- Brand with logo -->
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'CampusMart:index' %}">
+      <img src="{% static 'campusmart_logo.png' %}" alt="Logo" style="height: 80px; width: auto;" class="me-2">
+    </a>
 
+    <!-- Mobile toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav content -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+      <ul class="navbar-nav align-items-center">
+
+        <!-- Inbox Button for Messaging Function-->
+         <li class="nav-item">
+          <a class="nav-link dropdown-toggle" href="#" id="inboxdropdown" role="button" data-bs-toggle="dropdown">
+              Inbox
+          </a>
+        </li>
+
+        <!-- Dropdown for username / logout -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown">
+            {{ request.user.username }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <form action="{% url 'CampusMart:logout' %}" method="POST" class="px-3">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item logout-hover">Log Out</button>
+              </form>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
 <div class="container mt-5">
     <h1 class="text-center mb-4">Update Listing</h1>
 
     <form method="post" enctype="multipart/form-data" class="w-75 mx-auto">
         {% csrf_token %}
 
+        <!-- Title -->
         <div class="mb-3 text-start">
             <h3 class="h5">Title</h3>
             <input type="text" name="title" class="form-control" value="{{ product.title }}" required>
         </div>
 
+        <!-- Description -->
         <div class="mb-3 text-start">
             <h3 class="h5">Description</h3>
             <textarea name="description" class="form-control" required>{{ product.description }}</textarea>
         </div>
 
+        <!-- Price -->
         <div class="mb-3 text-start">
             <h3 class="h5">Price</h3>
             <input type="number" name="price" class="form-control" value="{{ product.price }}" step="1.00" required>
         </div>
 
+        <!-- Condition -->
         <div class="mb-3 text-start">
             <h3 class="h5">Condition</h3>
             <select name="condition" class="form-select" required>
@@ -82,6 +94,7 @@
             </select>
         </div>
 
+        <!-- Status -->
         <div class="mb-3">
             <h3 class="h5">Status</h3>
             <select name="status" class="form-select" required>
@@ -90,6 +103,7 @@
             </select>
         </div>
 
+        <!-- Photows -->
         <div class="mb-3">
             <h3 class="h5">Current Images</h3>
             <div class="d-flex flex-wrap">

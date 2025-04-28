@@ -1,3 +1,4 @@
+<!-- View All Screen -->
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -13,42 +14,50 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-          <!-- Brand with logo -->
-          <a class="navbar-brand d-flex align-items-center" href="{% url 'CampusMart:index' %}">
-            <img src="{% static 'campusmart_logo.png' %}" alt="Logo" style="height: 80px; width: auto;" class="me-2">
-          </a>
-      
-          <!-- Mobile toggle -->
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-      
-          <!-- Nav content -->
-          <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
-            <ul class="navbar-nav align-items-center">
-    
-              <!-- Dropdown for username / logout -->
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown">
-                  {{ request.user.username }}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <form action="{% url 'CampusMart:logout' %}" method="POST" class="px-3">
-                      {% csrf_token %}
-                      <button type="submit" class="dropdown-item logout-hover">Log Out</button>
-                    </form>
-                  </li>
-                </ul>
-              </li>
-      
-            </ul>
-          </div>
-        </div>
-      </nav>
+<!-- Full Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <!-- Brand with logo -->
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'CampusMart:index' %}">
+      <img src="{% static 'campusmart_logo.png' %}" alt="Logo" style="height: 80px; width: auto;" class="me-2">
+    </a>
 
+    <!-- Mobile toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav content -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+      <ul class="navbar-nav align-items-center">
+
+        <!-- Inbox Button for Messaging Function-->
+         <li class="nav-item">
+          <a class="nav-link dropdown-toggle" href="#" id="inboxdropdown" role="button" data-bs-toggle="dropdown">
+              Inbox
+          </a>
+        </li>
+
+        <!-- Dropdown for username / logout -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown">
+            {{ request.user.username }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <form action="{% url 'CampusMart:logout' %}" method="POST" class="px-3">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item logout-hover">Log Out</button>
+              </form>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+ <!-- Main Content -->
 <div class="container mt-5 text-center">
     <h2>All Listings</h2>
     <!-- Search for content -->
@@ -65,6 +74,7 @@
     </div>
     {% endif %}
 
+    <!-- Display all listings -->
     {% if listings %}
         <div class="row row-cols-1 row-cols-md-2 g-4 mt-3">
             {% for product in listings %}
@@ -81,6 +91,7 @@
                         {% else %}
                             <p class="text-muted">No image uploaded</p>
                         {% endif %}
+                        <!-- Display data -->
                         <div class="card-body">
                             <p class="card-title"><strong>Item: </strong>{{ product.title }}</p>
                             <p class="card-text"><strong>Price:</strong> {{ product.price }} Krato$Coin </p>
@@ -90,6 +101,15 @@
                                 {% else %}
                                 <span class="text-danger">{{ product.status }}</span>
                             {% endif %}</p>
+                            <!-- Message Button -->
+                            {% if request.user != product.seller.auth_user %}
+                            <p class="card-title"><strong>Message Seller: </strong></p>
+                                    <form method="POST" action="{% url 'CampusMart:messaging' product.id %}">
+                                    {% csrf_token %}
+                                    <textarea name="body" rows="3" placeholder="Write your message..." required class="form-control mb-2"></textarea>
+                                    <button type="submit" class="btn btn-primary">Send Message</button>
+                                </form>
+                            {% endif %}
                             <div class="d-flex justify-content-between mt-3">
                             </form>
                             </div>  
@@ -103,6 +123,7 @@
     {% endif %}
 </div>
 
+<!-- Pagination Footer -->
 <footer class="mt-auto">
   <div class="pagination d-flex justify-content-center my-4">
     <span class="step-links">
