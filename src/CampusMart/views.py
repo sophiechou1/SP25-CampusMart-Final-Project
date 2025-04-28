@@ -214,3 +214,17 @@ def delete_listing(request, product_id):
 
     # Fallback (not expected)
     return HttpResponseRedirect(reverse('CampusMart:my_listings'))
+
+
+
+def view_all(request):
+    #need product title
+
+    #product price
+
+    #product
+
+    #20 products at a time
+
+
+    return
