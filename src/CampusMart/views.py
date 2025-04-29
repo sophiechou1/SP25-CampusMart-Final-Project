@@ -291,12 +291,21 @@ def inbox(request):
     except User.DoesNotExist:
         return HttpResponseRedirect(reverse('CampusMart:index'))
 
-    received_messages = Message.objects.filter(receiver=user).order_by('-timestamp')
-    sent_messages = Message.objects.filter(sender=user).order_by('-timestamp')
-    
+    all_messages = Message.objects.filter(
+        Q(sender=user) | Q(receiver=user)
+    ).order_by('-timestamp')
+
+    conversations = {}
+
+    for msg in all_messages:
+        participants = tuple(sorted([msg.sender.id, msg.receiver.id]))
+        key = (participants, msg.product.id)
+
+        if key not in conversations:
+            conversations[key] = msg  # first (latest) message seen because of order_by('-timestamp')
+
     context = {
-        'received_messages': received_messages,
-        'sent_messages': sent_messages,
+        'conversations': conversations.values()
     }
     return render(request, 'CampusMart/messaging.html', context)
 

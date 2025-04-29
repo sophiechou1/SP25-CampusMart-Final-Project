@@ -32,7 +32,7 @@
 
           <!-- Inbox Dropdown -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-secondary" href="#" id="inboxDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="inboxDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Inbox
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="inboxDropdown">
@@ -61,58 +61,45 @@
 
 <!-- Main content -->
 <div class="container py-5">
+  <h3 class="mb-4 text-center">Your Conversations</h3>
 
-    <!-- Received Messages -->
-    <div class="card mb-3">
-        {% if received_messages %}
-            <div class="card-header">
-                Received Messages
-            </div>
-            <ul class="list-group list-group-flush">
-                {% for message in received_messages %}
-                    <li class="list-group-item">
-                        <div class="fw-bold">From: {{ message.sender }}</div>
-                        <div class="mt-2">{{ message.body }}</div>
-                        <div class="text-end text-muted small mt-2">Sent on: {{ message.timestamp }}</div>
-
-                        <!-- Respond Button -->
-                        <div class="text-end mt-2">
-                          <a href="{% url 'CampusMart:chat_with_user' message.product.id message.sender.id %}" class="btn btn-outline-primary btn-sm">
-                            Chat
-                        </a>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <div class="card-body text-center text-muted">
-                No received messages.
-            </div>
-        {% endif %}
-    </div>
-
-    <!-- Sent Messages -->
-    <div class="card mb-3">
-        {% if sent_messages %}
-            <div class="card-header">
-                Sent Messages
-            </div>
-            <ul class="list-group list-group-flush">
-                {% for message in sent_messages %}
-                    <li class="list-group-item">
-                        <div class="fw-bold">To: {{ message.receiver }}</div>
-                        <div class="mt-2">{{ message.body }}</div>
-                        <div class="text-end text-muted small mt-2">Sent on: {{ message.timestamp }}</div>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <div class="card-body text-center text-muted">
-                No sent messages.
-            </div>
-        {% endif %}
-    </div>
-
+  {% if conversations %}
+      <ul class="list-group">
+          {% for message in conversations %}
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                      <div class="fw-bold">
+                          {% if message.sender.auth_user == request.user %}
+                              To: {{ message.receiver.username }}
+                          {% else %}
+                              From: {{ message.sender.username }}
+                          {% endif %}
+                          &nbsp;•&nbsp; <span class="text-muted">on "{{ message.product.title }}"</span>
+                      </div>
+                      <div class="text-muted small">{{ message.timestamp|date:"M d, Y, P" }}</div>
+                      <div class="mt-1">{{ message.body|truncatewords:12 }}</div>
+                  </div>
+                  {% if message.sender.auth_user == request.user %}
+                    {% with other_user_id=message.receiver.id %}
+                      <a href="{% url 'CampusMart:chat_with_user' message.product.id other_user_id %}" class="btn btn-outline-primary btn-sm">
+                        Chat
+                      </a>
+                    {% endwith %}
+                  {% else %}
+                    {% with other_user_id=message.sender.id %}
+                      <a href="{% url 'CampusMart:chat_with_user' message.product.id other_user_id %}" class="btn btn-outline-primary btn-sm">
+                        Chat
+                      </a>
+                    {% endwith %}
+                  {% endif %}
+              </li>
+          {% endfor %}
+      </ul>
+  {% else %}
+      <div class="card-body text-center text-muted">
+          You have no conversations yet.
+      </div>
+  {% endif %}
 </div>
 </body>
 </html>

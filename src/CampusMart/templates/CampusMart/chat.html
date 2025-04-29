@@ -32,7 +32,7 @@
 
           <!-- Inbox Dropdown -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-secondary" href="#" id="inboxDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="inboxDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Inbox
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="inboxDropdown">
@@ -62,7 +62,7 @@
 <!-- Main content -->
 <div class="container py-4">
   <a href="{% url 'CampusMart:inbox' %}" class="text-muted" style="font-size: 16px;">
-    ← Back to Inbox
+    Back to Inbox
   </a>
   {% if messages %}
   <div class="container mt-3">
