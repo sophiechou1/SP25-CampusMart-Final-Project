@@ -25,12 +25,17 @@ def index(request):
         try:
             custom_user = User.objects.get(auth_user=request.user)
             first_name = custom_user.first_name
+            today = now().date()
+            post_count = Product.objects.filter(seller=custom_user, post_date__date=today).count()
+            remaining = max(0, 3 - post_count)
+
         except User.DoesNotExist:
             first_name = request.user.first_name or request.user.username
 
     context = {
         'app': 'CampusMart',
         'first_name': first_name,
+        'remaining': remaining,
     }
 
     return render(request, 'CampusMart/index.html', context)
@@ -96,6 +101,7 @@ def register(request):
         return render(request, "CampusMart/register.html")
 
 # create listing
+@login_required
 def create_listing(request):
     today = now().date()
     try:
@@ -128,9 +134,12 @@ def create_listing(request):
             description=description,
             price=price,
             condition=condition,
-            post_date = today,
+            post_date = now(),
             status='AVAILABLE'
         )
+        post_count = Product.objects.filter(seller=seller_user, post_date__date=today).count()
+
+        messages.success(request, "Listing Successfully Posted")
 
         for img in request.FILES.getlist('images'):
             ProductImage.objects.create(product=product, image=img)
@@ -141,7 +150,6 @@ def create_listing(request):
         'remaining': 3 - post_count,
     }
     
-
     return render(request, 'CampusMart/create_listing.html', context)
 
 # update listing
@@ -176,6 +184,7 @@ def update_listing(request, product_id):
         product.condition = condition
         product.status = status
         product.save()
+        messages.success(request, "Listing Successfully Updated")
 
         if new_images:
             ProductImage.objects.filter(product=product).delete()
@@ -266,6 +275,7 @@ def messaging(request, product_id):
                 product=product,
                 body=body
             )
+            messages.success(request, "Message sent!")
             return HttpResponseRedirect(reverse('CampusMart:view_all'))
         
         else:
@@ -273,14 +283,13 @@ def messaging(request, product_id):
 
     return HttpResponseRedirect(reverse('CampusMart:view_all'))
 
-#inbox view to view the messages
+# inbox view to view the messages
 @login_required
 def inbox(request):
     try:
         user = User.objects.get(auth_user=request.user)
     except User.DoesNotExist:
-        messages.error(request, "User profile not found.")
-        return redirect('CampusMart:index')  # or wherever makes sense
+        return HttpResponseRedirect(reverse('CampusMart:index'))
 
     received_messages = Message.objects.filter(receiver=user).order_by('-timestamp')
     sent_messages = Message.objects.filter(sender=user).order_by('-timestamp')
@@ -290,6 +299,41 @@ def inbox(request):
         'sent_messages': sent_messages,
     }
     return render(request, 'CampusMart/messaging.html', context)
+
+@login_required
+def chat_with_user(request, product_id, user_id):
+    try:
+        user = User.objects.get(auth_user=request.user)  # Logged-in user
+        other_user = User.objects.get(id=user_id)         # The user you're chatting with
+        product = Product.objects.get(id=product_id)      # The product we're chatting about
+    except (User.DoesNotExist, Product.DoesNotExist):
+        messages.error(request, "User or product not found.")
+        return redirect('CampusMart:inbox')
+
+    # Get all messages BETWEEN these two users about THIS product only
+    chat_messages = Message.objects.filter(
+        product=product
+    ).filter(
+        (Q(sender=user) & Q(receiver=other_user)) |
+        (Q(sender=other_user) & Q(receiver=user))
+    ).order_by('timestamp')  # Sort oldest to newest
+
+    if request.method == 'POST':
+        body = request.POST.get('body')
+        if body:
+            Message.objects.create(
+                sender=user,
+                receiver=other_user,
+                product=product,
+                body=body
+            )
+            return redirect('CampusMart:chat_with_user', product_id=product.id, user_id=other_user.id)
+
+    return render(request, 'CampusMart/chat.html', {
+        'other_user': other_user,
+        'chat_messages': chat_messages,
+        'product': product,
+    })
 
 # purchasing interface view 
 def purchase_listings(request):
