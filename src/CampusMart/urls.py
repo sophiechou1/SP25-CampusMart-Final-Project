@@ -18,6 +18,6 @@ urlpatterns = [
     path('listing/all/', views.view_all, name='view_all'),
     path('inbox/', views.inbox, name='inbox'),
     path('messaging/<int:product_id>/', views.messaging, name='messaging'),
-    path('purchase_listings/', views.purchase_listings, name='purchase_listings'),
+    path('purchase/', views.purchase_listings, name='purchase_listings'),
     path('chat/<int:product_id>/<int:user_id>/', views.chat_with_user, name='chat_with_user'),
 ]

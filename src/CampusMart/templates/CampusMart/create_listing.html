@@ -109,7 +109,7 @@
     {% else %}
         <p class="text-danger text-center">You’ve used all 3 free listings today. Buy more listings or return to home.</p>
         <div class="container mt-3 text-center">
-          <a href="{% url 'CampusMart:index' %}" class="btn btn-primary">Buy More Listings</a>
+          <a href="{% url 'CampusMart:purchase_listings' %}" class="btn btn-primary">Buy More Listings</a>
           <a href="{% url 'CampusMart:index' %}" class="btn btn-primary">Return to Home</a>
         </div>
     {% endif %}

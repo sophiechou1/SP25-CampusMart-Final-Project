@@ -14,12 +14,13 @@ from django.db.models import Q
 from django.contrib import messages
 from .forms import PurchaseListingsForm
 from .models import UserExtraListings
-from .services import get_access_token, view_user_balance, user_pay
+from .services import get_access_token, view_balance_for_user, user_pay
 from django.conf import settings
 
 # index view
 def index(request):
     first_name = ""
+    remaining = 0
     
     if request.user.is_authenticated:
         try:
@@ -261,6 +262,7 @@ def view_all(request):
 # message function between seller & buyer
 @login_required
 def messaging(request, product_id):
+    sender_user = get_object_or_404(User, auth_user=request.user)
     if request.method == 'POST':
         product = get_object_or_404(Product, id=product_id)
         sender_user = User.objects.get(auth_user=request.user)
@@ -346,6 +348,26 @@ def chat_with_user(request, product_id, user_id):
 
 # purchasing interface view 
 def purchase_listings(request):
+    balance = None     # default balance
+    listing_balance = None  # user's current balance
+
+    if request.user.is_authenticated:
+        user_email = request.user.email
+        # get current listing balance
+        try:
+            user = User.objects.get(email=user_email)
+            user_extra = UserExtraListings.objects.get(user=user)
+            listing_balance = user_extra.extra_listings
+        except (User.DoesNotExist, UserExtraListings.DoesNotExist):
+            listing_balance = 0
+        # get external balance
+        try:
+            access_token = get_access_token(settings.API_USERNAME, settings.API_PASSWORD)
+            balance = view_balance_for_user(access_token, user_email)
+        except Exception as e:
+            balance = "Unavailable"
+            messages.error(request, f"Could not retrieve balance: {str(e)}")
+
     if request.method == 'POST':
         form = PurchaseListingsForm(request.POST)
         if form.is_valid():
@@ -357,18 +379,23 @@ def purchase_listings(request):
                 access_token = get_access_token(settings.API_USERNAME, settings.API_PASSWORD)
 
                 # 2. View Current Balance
-                balance = view_user_balance(access_token, user_email)
+                balance = view_balance_for_user(access_token, user_email)
 
                 # 3. Check if user has enough balance
+                if balance is None:
+                    messages.error(request, "Could not retrieve your balance. Please try again later.")
+                    return redirect('CampusMart:purchase_listings')
                 if balance < number_of_listings:
-                    messages.error(request, "Insufficient funds. Please add more Krato$Coin.")
-                    return redirect('purchase_listings')
+                    messages.error(request, "Insufficient funds.")
+                    return redirect('CampusMart:purchase_listings')
 
                 # 4. Charge the user
+                # BUTTON
                 user_pay(access_token, user_email, number_of_listings)
 
                 # 5. Update user's extra listings locally
-                extra_listing_record, created = UserExtraListings.objects.get_or_create(user=request.user)
+                user = User.objects.get(email=user_email)
+                extra_listing_record, created = UserExtraListings.objects.get_or_create(user=user)
                 extra_listing_record.extra_listings += number_of_listings
                 extra_listing_record.save()
 
@@ -377,8 +404,8 @@ def purchase_listings(request):
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
 
-            return redirect('purchase_listings')
+            return redirect('CampusMart:purchase_listings')
     else:
         form = PurchaseListingsForm()
 
-    return render(request, 'purchase_listings.html', {'form': form})
+    return render(request, 'CampusMart/purchase_listings.html', {'form': form, 'balance': balance, 'listing_balance': listing_balance,})

@@ -1,15 +1,54 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase Extra Listings</title>
+    <style>
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+    
+        .button-row button,
+        .button-link {
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+        }
+    
+        .button-link:hover,
+        .button-row button:hover {
+            background-color: #0056b3;
+        }
+    </style>    
+</head>
+<body>
 
-{% block content %}
-<h2>Purchase Extra Listings</h2>
+    <h2>Purchase Extra Listings</h2>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Buy Listings</button>
-</form>
+    <p>Your current balance is {{ balance }} Krato$Coins</p>
 
-{% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-{% endfor %}
-{% endblock %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="button-row">
+            <a href="{% url 'CampusMart:index' %}" class="button-link">
+                Return to Home
+            </a>
+            <button type="submit">Buy Listings</button>
+        </div>
+    </form>
+
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+
+</body>
+</html>
