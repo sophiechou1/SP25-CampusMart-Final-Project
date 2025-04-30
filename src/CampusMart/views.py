@@ -399,7 +399,7 @@ def purchase_listings(request):
                 extra_listing_record.extra_listings += number_of_listings
                 extra_listing_record.save()
 
-                messages.success(request, f"You successfully purchased {number_of_listings} extra listings!")
+                messages.success(request, f"You successfully purchased {extra_listing_record.extra_listings} extra listings!")
 
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
