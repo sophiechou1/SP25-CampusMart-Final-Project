@@ -79,15 +79,16 @@
     {% endif %}
 
     {% if remaining is not None %}
-      <p class="text-success">You have {{ remaining }} free listings left today</p>
+      <p class="text-success">You have {{ remaining }} listings left</p>
     {% elif remaining == 0 %}
-      <p class="text-danger">You have {{ remaining }} free listings left today</p>
+      <p class="text-danger">You have {{ remaining }} listings left</p>
     {% endif %}
 
     <div class="container mt-3 text-center">
         <a href="{% url 'CampusMart:create_listing' %}" class="btn btn-primary">Create New Listing</a>
         <a href="{% url 'CampusMart:my_listings' %}" class="btn btn-primary">View Your Listings</a>
         <a href="{% url 'CampusMart:view_all' %}" class="btn btn-primary">View All Listings</a>
+        <a href="{% url 'CampusMart:purchase_listings' %}" class="btn btn-primary">Buy More Listings</a>
     </div>
 </div>
 

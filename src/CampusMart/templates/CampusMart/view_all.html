@@ -87,9 +87,9 @@
     {% endif %}
 
     <!-- Display all listings -->
-    {% if listings %}
+    {% if page_obj %}
         <div class="row row-cols-1 row-cols-md-2 g-4 mt-3">
-            {% for product in listings %}
+            {% for product in page_obj %}
             <div class="col d-flex justify-content-center">
               <div class="card h-100">
                         <br>
@@ -137,22 +137,17 @@
 
 <!-- Pagination Footer -->
 <footer class="mt-auto">
-  <div class="pagination d-flex justify-content-center my-4">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-        {% endif %}
+  <div class="pagination">
+      {% if page_obj.has_previous %}
+          <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
 
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-        </span>
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
 
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-    </span>
+      {% if page_obj.has_next %}
+          <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+      {% endif %}
   </div>
+
 </footer>
 </body>

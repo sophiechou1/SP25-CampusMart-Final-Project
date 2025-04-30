@@ -28,7 +28,8 @@ def index(request):
             first_name = custom_user.first_name
             today = now().date()
             post_count = Product.objects.filter(seller=custom_user, post_date__date=today).count()
-            remaining = max(0, 3 - post_count)
+            user = UserExtraListings.objects.get_or_create(user=custom_user)[0]
+            remaining = max(0, 3 + user.extra_listings - post_count)
 
         except User.DoesNotExist:
             first_name = request.user.first_name or request.user.username
@@ -240,24 +241,45 @@ def delete_listing(request, product_id):
 
 #view all listings 
 @login_required
-def view_all(request):
-    #get all listings available
-    listings = Product.objects.filter(status='AVAILABLE').order_by('-post_date')
-    #use paginator to get 20 per page
-    p = Paginator(listings, 20)    
-    #to help users navigate 
-    page_number = request.GET.get("page")
-    page_obj = p.get_page(page_number)  
+# def view_all(request):
+#     #get all listings available
+#     listings = Product.objects.filter(status='AVAILABLE').order_by('-post_date')
+#     #use paginator to get 20 per page
+#     p = Paginator(listings, 20)    
+#     #to help users navigate 
+#     page_number = request.GET.get("page")
+#     page_obj = p.get_page(page_number)  
 
-    # search functionality
+#     # search functionality
+#     query = request.GET.get('q')
+#     if query:
+#         listings = listings.filter(
+#             Q(title__icontains=query) | Q(description__icontains=query)
+#         )
+
+#     return render(request, 'CampusMart/view_all.html', {'listings': listings, 'page_obj': page_obj})
+
+def view_all(request):
     query = request.GET.get('q')
+
+    # Filter listings based on query (if any)
+    listings = Product.objects.filter(status='AVAILABLE')
     if query:
         listings = listings.filter(
             Q(title__icontains=query) | Q(description__icontains=query)
         )
 
-    return render(request, 'CampusMart/view_all.html', {'listings': listings, 'page_obj': page_obj})
+    listings = listings.order_by('-post_date')  # sort after filtering
 
+    # Paginate the (filtered) listings
+    p = Paginator(listings, 20)
+    page_number = request.GET.get("page")
+    page_obj = p.get_page(page_number)
+
+    return render(request, 'CampusMart/view_all.html', {
+        'page_obj': page_obj,
+        'query': query,  # send back query to maintain it in pagination links if needed
+    })
 
 # message function between seller & buyer
 @login_required
