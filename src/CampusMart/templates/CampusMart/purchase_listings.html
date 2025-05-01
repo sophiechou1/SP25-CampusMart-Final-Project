@@ -67,7 +67,7 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <div class="button-row">
+        <div class="button-row d-flex justify-content-center gap-2 mt-3">
             <a href="{% url 'CampusMart:index' %}" class="btn btn-outline-danger">
                 Return to Home
             </a>
