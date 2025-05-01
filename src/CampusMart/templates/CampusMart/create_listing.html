@@ -62,7 +62,7 @@
     <h1 class="text-center mb-4">Create New Listing</h1>
 
     {% if remaining > 0 %}
-        <p class="text-success text-center">You have {{ remaining }} free listings left today</p>
+        <p class="text-success text-center">You have {{ remaining }} listings left today</p>
         <form method="post" enctype="multipart/form-data" class="w-75 mx-auto">
           {% csrf_token %}
   
@@ -107,7 +107,7 @@
           </div>
       </form>
     {% else %}
-        <p class="text-danger text-center">You’ve used all 3 free listings today. Buy more listings or return to home.</p>
+        <p class="text-danger text-center">You’ve used all available listings today. Buy more listings or return to home.</p>
         <div class="container mt-3 text-center">
           <a href="{% url 'CampusMart:purchase_listings' %}" class="btn btn-primary">Buy More Listings</a>
           <a href="{% url 'CampusMart:index' %}" class="btn btn-primary">Return to Home</a>

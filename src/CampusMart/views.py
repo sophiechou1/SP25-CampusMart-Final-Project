@@ -16,6 +16,7 @@ from .forms import PurchaseListingsForm
 from .models import UserExtraListings
 from .services import get_access_token, view_balance_for_user, user_pay
 from django.conf import settings
+from django.utils.timezone import localtime
 
 # index view
 def index(request):
@@ -26,7 +27,7 @@ def index(request):
         try:
             custom_user = User.objects.get(auth_user=request.user)
             first_name = custom_user.first_name
-            today = now().date()
+            today = localtime().date()
             post_count = Product.objects.filter(seller=custom_user, post_date__date=today).count()
             user = UserExtraListings.objects.get_or_create(user=custom_user)[0]
             remaining = max(0, 3 + user.extra_listings - post_count)
@@ -84,7 +85,6 @@ def register(request):
             # create a new user
             auth_user = AuthUser.objects.create_user(username=uname, password=pwd, email=email)
             user = User.objects.create(auth_user=auth_user, username=uname, email=email)
-            #user = User.objects.create_user(username=uname, password=pwd, email=email)
             user.first_name = first_name
 
             # validation succeeded, save the new user to the database
@@ -105,7 +105,7 @@ def register(request):
 # create listing
 @login_required
 def create_listing(request):
-    today = now().date()
+    today = localtime().date()
     try:
         seller_user = User.objects.get(auth_user=request.user)
     except User.DoesNotExist:
@@ -113,8 +113,13 @@ def create_listing(request):
             'remaining': 0,
             'error': 'Your user profile was not found.'
         })
+    
+    # get remaining listings
     post_count = Product.objects.filter(seller=seller_user, post_date__date=today).count()
+    user = UserExtraListings.objects.get_or_create(user=seller_user)[0]
+    remaining = max(0, 3 + user.extra_listings - post_count)
 
+    # get all info
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description')
@@ -126,7 +131,7 @@ def create_listing(request):
             messages.error(request, "All fields are required, including at least one image.")
             return render(request, 'CampusMart/create_listing.html')
 
-        if post_count >= 3:
+        if remaining <= 0:
             messages.warning(request, "You've reached your daily listing limit.")
             return HttpResponseRedirect(reverse('CampusMart:index'))
         
@@ -136,7 +141,7 @@ def create_listing(request):
             description=description,
             price=price,
             condition=condition,
-            post_date = now(),
+            post_date = localtime(),
             status='AVAILABLE'
         )
         post_count = Product.objects.filter(seller=seller_user, post_date__date=today).count()
@@ -149,7 +154,7 @@ def create_listing(request):
         return HttpResponseRedirect(reverse('CampusMart:index'))
     
     context = {
-        'remaining': 3 - post_count,
+        'remaining': remaining,
     }
     
     return render(request, 'CampusMart/create_listing.html', context)
@@ -157,7 +162,7 @@ def create_listing(request):
 # update listing
 @login_required
 def update_listing(request, product_id):
-    today = now().date()
+    today = localtime().date()
     try:
         seller_user = User.objects.get(auth_user=request.user)
     except User.DoesNotExist:
@@ -168,6 +173,7 @@ def update_listing(request, product_id):
     product = get_object_or_404(Product, id=product_id, seller__auth_user=request.user)
     post_count = Product.objects.filter(seller=seller_user, post_date__date=today).count()
 
+    # get all info
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description')
@@ -179,7 +185,7 @@ def update_listing(request, product_id):
         if not title or not description or not price or not condition or not status:
             return HttpResponseRedirect(reverse('CampusMart:index'))
 
-        # Update fields
+        # update fields
         product.title = title
         product.description = description
         product.price = price
@@ -196,7 +202,7 @@ def update_listing(request, product_id):
 
     context = {
         'product': product,
-        'remaining': 3 - Product.objects.filter(seller=product.seller, post_date__date=now().date()).count(),
+        'remaining': 3 - Product.objects.filter(seller=product.seller, post_date__date=localtime().date()).count(),
     }
 
     return render(request, 'CampusMart/update_listing.html', context)
@@ -209,6 +215,7 @@ def my_listings(request):
     except User.DoesNotExist:
         return render(request, 'CampusMart/my_listings.html', {'error': 'Profile not found', 'listings': []})
 
+    # get all listings based on profile
     listings = Product.objects.filter(seller=user_profile)
 
     return render(request, 'CampusMart/my_listings.html', {
@@ -219,50 +226,30 @@ def my_listings(request):
 @login_required
 def delete_listing(request, product_id):
     try:
-        # Get the custom user linked to the logged-in Django user
+        # get the user linked to the logged-in user
         custom_user = User.objects.get(auth_user=request.user)
     except User.DoesNotExist:
         return HttpResponseRedirect(reverse('CampusMart:my_listings'))
 
-    # Get the product only if it belongs to the current user
+    # get the product only if it belongs to the current user
     try:
         product = Product.objects.get(id=product_id, seller=custom_user)
     except Product.DoesNotExist:
         return HttpResponseRedirect(reverse('CampusMart:my_listings'))
 
-    # Delete only on POST
+    # delete only on POST
     if request.method == 'POST':
         product.delete()
         return HttpResponseRedirect(reverse('CampusMart:my_listings'))
 
-    # Fallback (not expected)
     return HttpResponseRedirect(reverse('CampusMart:my_listings'))
 
 
-#view all listings 
-@login_required
-# def view_all(request):
-#     #get all listings available
-#     listings = Product.objects.filter(status='AVAILABLE').order_by('-post_date')
-#     #use paginator to get 20 per page
-#     p = Paginator(listings, 20)    
-#     #to help users navigate 
-#     page_number = request.GET.get("page")
-#     page_obj = p.get_page(page_number)  
-
-#     # search functionality
-#     query = request.GET.get('q')
-#     if query:
-#         listings = listings.filter(
-#             Q(title__icontains=query) | Q(description__icontains=query)
-#         )
-
-#     return render(request, 'CampusMart/view_all.html', {'listings': listings, 'page_obj': page_obj})
-
+# view all listings 
 def view_all(request):
     query = request.GET.get('q')
 
-    # Filter listings based on query (if any)
+    # filter listings based on query
     listings = Product.objects.filter(status='AVAILABLE')
     if query:
         listings = listings.filter(
@@ -271,7 +258,7 @@ def view_all(request):
 
     listings = listings.order_by('-post_date')  # sort after filtering
 
-    # Paginate the (filtered) listings
+    # paginate the (filtered) listings
     p = Paginator(listings, 20)
     page_number = request.GET.get("page")
     page_obj = p.get_page(page_number)
@@ -292,6 +279,7 @@ def messaging(request, product_id):
 
         body = request.POST.get('body')
 
+        # get the messages sent/received attached to current user
         if body:
             Message.objects.create(
                 sender=sender_user,
@@ -315,9 +303,8 @@ def inbox(request):
     except User.DoesNotExist:
         return HttpResponseRedirect(reverse('CampusMart:index'))
 
-    all_messages = Message.objects.filter(
-        Q(sender=user) | Q(receiver=user)
-    ).order_by('-timestamp')
+    # sort the messages
+    all_messages = Message.objects.filter(Q(sender=user) | Q(receiver=user)).order_by('-timestamp')
 
     conversations = {}
 
@@ -326,7 +313,7 @@ def inbox(request):
         key = (participants, msg.product.id)
 
         if key not in conversations:
-            conversations[key] = msg  # first (latest) message seen because of order_by('-timestamp')
+            conversations[key] = msg  # first (latest) message seen
 
     context = {
         'conversations': conversations.values()
@@ -336,20 +323,15 @@ def inbox(request):
 @login_required
 def chat_with_user(request, product_id, user_id):
     try:
-        user = User.objects.get(auth_user=request.user)  # Logged-in user
-        other_user = User.objects.get(id=user_id)         # The user you're chatting with
-        product = Product.objects.get(id=product_id)      # The product we're chatting about
+        user = User.objects.get(auth_user=request.user) 
+        other_user = User.objects.get(id=user_id)         # user you're chatting with
+        product = Product.objects.get(id=product_id)      # product we're chatting about
     except (User.DoesNotExist, Product.DoesNotExist):
         messages.error(request, "User or product not found.")
         return redirect('CampusMart:inbox')
 
-    # Get all messages BETWEEN these two users about THIS product only
-    chat_messages = Message.objects.filter(
-        product=product
-    ).filter(
-        (Q(sender=user) & Q(receiver=other_user)) |
-        (Q(sender=other_user) & Q(receiver=user))
-    ).order_by('timestamp')  # Sort oldest to newest
+    # get all messages between these two users about product
+    chat_messages = Message.objects.filter(product=product).filter((Q(sender=user) & Q(receiver=other_user)) |(Q(sender=other_user) & Q(receiver=user))).order_by('timestamp')  # sort oldest to newest
 
     if request.method == 'POST':
         body = request.POST.get('body')
@@ -397,13 +379,13 @@ def purchase_listings(request):
             user_email = request.user.email
 
             try:
-                # 1. Get Access Token
+                # get Access Token
                 access_token = get_access_token(settings.API_USERNAME, settings.API_PASSWORD)
 
-                # 2. View Current Balance
+                # view Current Balance
                 balance = view_balance_for_user(access_token, user_email)
 
-                # 3. Check if user has enough balance
+                # check if user has enough balance
                 if balance is None:
                     messages.error(request, "Could not retrieve your balance. Please try again later.")
                     return redirect('CampusMart:purchase_listings')
@@ -411,17 +393,16 @@ def purchase_listings(request):
                     messages.error(request, "Insufficient funds.")
                     return redirect('CampusMart:purchase_listings')
 
-                # 4. Charge the user
-                # BUTTON
+                # charge the user
                 user_pay(access_token, user_email, number_of_listings)
 
-                # 5. Update user's extra listings locally
+                # update user's extra listings locally
                 user = User.objects.get(email=user_email)
                 extra_listing_record, created = UserExtraListings.objects.get_or_create(user=user)
                 extra_listing_record.extra_listings += number_of_listings
                 extra_listing_record.save()
 
-                messages.success(request, f"You successfully purchased {extra_listing_record.extra_listings} extra listings!")
+                messages.success(request, f"You successfully purchased {number_of_listings} extra listings!")
 
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")

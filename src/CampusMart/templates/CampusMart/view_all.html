@@ -113,6 +113,21 @@
                                 {% else %}
                                 <span class="text-danger">{{ product.status }}</span>
                             {% endif %}</p>
+                            <!-- Read More Button -->
+                            <button class="btn btn-link btn-sm text-decoration-none toggle-button"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#details-{{ product.id }}"
+                                    aria-expanded="false"
+                                    aria-controls="details-{{ product.id }}"
+                                    id="toggle-btn-{{ product.id }}">
+                              Read More
+                            </button>
+                            <!-- Hidden Details -->
+                            <div class="collapse mt-2" id="details-{{ product.id }}">
+                              <p class="card-text"><strong>Description:</strong> {{ product.description }}</p>
+                              <p class="card-text"><strong>Condition:</strong> {{ product.condition }}</p>
+                            </div>
                             <!-- Message Button -->
                             {% if request.user != product.seller.auth_user %}
                             <p class="card-title"><strong>Message Seller: </strong></p>
@@ -136,18 +151,34 @@
 </div>
 
 <!-- Pagination Footer -->
-<footer class="mt-auto">
-  <div class="pagination">
-      {% if page_obj.has_previous %}
-          <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
-      {% endif %}
+<footer class="mt-auto py-3" style="margin-bottom: 20px;">
+  <div class="d-flex justify-content-center align-items-center gap-3">
+    {% if page_obj.has_previous %}
+      <a class="btn btn-sm btn-outline-secondary" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
 
-      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
 
-      {% if page_obj.has_next %}
-          <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
-      {% endif %}
+    {% if page_obj.has_next %}
+      <a class="btn btn-sm btn-outline-primary" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
   </div>
-
 </footer>
+<!-- Script for Read More Button-->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.toggle-button').forEach(function (btn) {
+      const targetId = btn.getAttribute('data-bs-target');
+      const target = document.querySelector(targetId);
+
+      target.addEventListener('show.bs.collapse', function () {
+        btn.textContent = 'Read Less';
+      });
+
+      target.addEventListener('hide.bs.collapse', function () {
+        btn.textContent = 'Read More';
+      });
+    });
+  });
+</script>
 </body>

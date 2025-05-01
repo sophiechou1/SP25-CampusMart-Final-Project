@@ -57,22 +57,3 @@ def user_pay(access_token, email, amount):
        return api_response.json()
    else:
        print("Failed to access the API endpoint to pay:", api_response.status_code)
-
-
-# def view_user_balance(access_token, email):
-#     print(f"Fetching balance from: {API_BASE_URL}/player/{email}/")
-#     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
-#     response = requests.get(f"{API_BASE_URL}/player/{email}/", headers=headers)
-#     if response.status_code == 200:
-#         return response.json().get("amount")
-#     else:
-#         raise Exception(f"Failed to get user balance: {response.status_code}")
-
-# def user_pay(access_token, email, amount):
-#     headers = {'Authorization': f'Bearer {access_token}'}
-#     data = {"amount": amount}
-#     response = requests.post(f"{API_BASE_URL}/player/{email}/pay", headers=headers, data=data)
-#     if response.status_code == 200:
-#         return response.json()
-#     else:
-#         raise Exception(f"Failed to pay: {response.status_code} {response.text}")

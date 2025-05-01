@@ -33,7 +33,8 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+# upload to helper function    
 def upload_to(instance, filename):
     product_id = instance.product_id or 'unsaved'
     return f'product_images/product_{product_id}/{filename}'
@@ -53,6 +54,7 @@ class Message(models.Model):
     def __str__(self):
         return f"From {self.sender.username} to {self.receiver.username} about {self.product.title}"
 
+# get default user helper function
 def get_default_user():
     from .models import User
     return User.objects.first().id
