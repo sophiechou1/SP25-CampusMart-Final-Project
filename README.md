@@ -31,6 +31,7 @@ Make sure you have the following installed:
 4. Run migrations
    ```sh
    cd src
+   python manage.py makemigrations CampusMart
    python manage.py migrate
    ```
 6.  Start server
