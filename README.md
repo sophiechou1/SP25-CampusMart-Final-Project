@@ -48,7 +48,7 @@ Make sure you have the following installed:
 * The templates directory contains all html files  
 Group-14/  
 ├── src/  
-&nbsp;&nbsp;&nbsp;&nbsp;├── CourseProject/
+&nbsp;&nbsp;&nbsp;&nbsp;├── CourseProject/  
 &nbsp;&nbsp;&nbsp;&nbsp;├── *.py files    
 &nbsp;&nbsp;&nbsp;&nbsp;├── CampusMart/  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── templates/  
@@ -59,7 +59,7 @@ Group-14/
 &nbsp;&nbsp;&nbsp;&nbsp;├── db.sqlite3  
 &nbsp;&nbsp;&nbsp;&nbsp;├── media    
 ├── README.md  
-├── CONTRIBUTIONS.md
-├── Phase 1 Report - Group 14.pdf
+├── CONTRIBUTIONS.md  
+├── Phase 1 Report - Group 14.pdf  
 ├── Final Report - Group 14.pdf    
 └── requirements.txt  
