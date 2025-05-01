@@ -51,9 +51,9 @@ Group-14/
 &nbsp;&nbsp;&nbsp;&nbsp;├── CourseProject/
 &nbsp;&nbsp;&nbsp;&nbsp;├── *.py files    
 &nbsp;&nbsp;&nbsp;&nbsp;├── CampusMart/  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── templates/
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── migrations/
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── static/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── templates/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── migrations/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── static/  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── *.py files  
 &nbsp;&nbsp;&nbsp;&nbsp;├── manage.py  
 &nbsp;&nbsp;&nbsp;&nbsp;├── db.sqlite3  
